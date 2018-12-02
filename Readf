@@ -1,0 +1,405 @@
+#include "pch.h"
+#include <iostream>
+#include <stdio.h>
+#include <math.h>
+#include <clocale>
+#include <stdlib.h>
+#include <time.h>
+#include <windows.h>
+#include <conio.h>
+
+/*!
+\file
+\brief Программа для сортировки строк многомерного массива в порядке возрастания(по первому элементу строки).
+\autor Designer
+\version 1.0
+\data 18.11.2018
+\example Сортирует строки многомерного массива в порядке возрастанияю.
+*/
+ 
+/*!
+\brief Функция, реализующая меню пользователя.
+\version 1.0
+\return
+Функция возвращяет значение указывающее на пункт меню:
+-"0" - если пользователь хочет прекратить работу
+-"1" - если пользователь хочет ввести размеры массива
+-"2" - если пользователь хочет заполнить массив случайными значениями
+-"3" - если пользователь хочет заполнить массив вручную
+-"4" - если пользователь хочет вывести массив на экран
+-"5" - если пользователь хочет отсортировать массив
+*/
+
+int printMenu()
+{
+	int m = 0;
+	printf("USER`S MENU.\n");
+	printf("Enter 1 if you want to enter the size of the array.\n");
+	printf("Enter 2 if you want to fill the array with random numbers.\n");
+	printf("Enter 3 if you want to fill the array yourself.\n");
+	printf("Enter 4 if you want to display an array.\n");
+	printf("Enter 5 if you want to sort the rows of the array.\n");
+	printf("--------------------------------------------------\n");
+	printf("Enter 0 if you want to finish the job.\n");
+
+
+
+
+	scanf_s("%d", &m);
+	return m;
+	getchar();
+	getchar();
+}
+
+/*!
+\brief Функция, реализующая создание многомерного динамического массива.
+\version 1.0
+\param[in] **arr1 - указатель на массив 
+\param[in] height - ширина массива
+\param[in] width - длина массива
+\return
+Функция возвращает указатель на массив
+
+//Полное описание функции:
+
+Функция создает многомерный массив
+*/
+int** createArray(int height, int width, int** &arr1)
+{
+
+	arr1 = new int*[height];
+	for (int i = 0; i < height; i = i + 1)
+	{
+		arr1[i] = new int[width];
+	}
+
+	return arr1;
+}
+
+/*!
+\brief Функция рализует освобождение памяти.
+\version 1.0
+\param[in] **arr1 - указатель на массив
+\param[in] height - ширина массива
+\return не возвращает значений.
+
+//Полное описание функции:
+
+Функция освобождает память, выделенную под многомерный динамический массив.
+*/
+void deleteArray(int height, int** arr1)
+{
+	if (arr1 != NULL)
+	{
+		for (int i = 0; i < height; i = i + 1)
+		{
+			delete[] arr1[i];
+		}
+		delete[] arr1;
+	}
+}
+
+/*!
+\brief Функция, запрашивающая у пользователя ширину многомерного массива.
+\version 1.0
+\return
+Функция возвращает ширину многомерного массива
+
+//Полное описание функции:
+
+Функция запрвшивает у пользователя значение, которое будет являться шириной искомого многомерного массива.
+*/
+
+int requestHeight()
+{
+	char c = '\n';
+	int h = 0;
+
+	printf("Enter array height: ");
+	while (scanf_s("%d%c", &h, &c, 1) != 2 || c != '\n' || (h < 0))		//Вводим размер массива и делаем проверку вводимых значений
+		if (h < 0)
+		{
+			printf("ERROR! You entered an incorrect value.Enter array height:\n ");
+			rewind(stdin);
+
+		}
+		else
+		{
+			printf("ERROR! You entered an incorrect value.Enter array height:\n ");
+			while (getchar() != '\n');
+		}
+	return h;
+}
+
+/*!
+\brief Функция, запрашивающая у пользователя длину многомерного массива.
+\version 1.0
+\return
+Функция возвращает длину многомерного массива
+
+//Полное описание функции:
+
+Функция запрвшивает у пользователя значение, которое будет являться длиной искомого многомерного массива.
+*/
+int requestWidth()
+{
+	char c = '\n';
+	int w = 0;
+
+	printf("\n");
+	printf("Enter array width: ");
+	while (scanf_s("%d%c", &w, &c, 1) != 2 || c != '\n' || (w < 0))
+		if (w < 0)
+		{
+			printf("ERROR! You entered an incorrect value.Enter array height:\n ");
+			rewind(stdin);
+
+		}
+		else
+		{
+			printf("ERROR! You entered an incorrect value.Enter array height:\n ");
+			while (getchar() != '\n');
+		}
+	return w;
+}
+
+/*!
+\brief Функция рализует заполнение массива случайными значениями.
+\version 1.0
+\param[in] **arr1 - указатель на массив
+\param[in] height - ширина массива
+\param[in] width - длина массива
+\return не возвращает значений.
+
+//Полное описание функции:
+
+Функция заполняет многомерный массив случайными значениями.
+*/
+
+void fillingArr1Rand(int height, int  width, int** arr1)
+{
+	srand(time(NULL));
+	for (int i = 0; i < height; i = i + 1)     // Заполняем массив рандомными значениями
+	{
+		for (int j = 0; j < width; j = j + 1)
+		{
+			arr1[i][j] = rand() % 10;
+		}
+	}
+}
+
+/*!
+\brief Функция рализует заполнение массива пользователем вручную.
+\version 1.0
+\param[in] **arr1 - указатель на массив
+\param[in] height - ширина массива
+\param[in] width - длина массива
+\return не возвращает значений.
+
+//Полное описание функции:
+
+Функция заполняет многомерный значениями,которые вводит пользователь вручную.
+*/
+
+void fillingArr1Hand(int height, int  width, int** arr1)
+{
+	char c = '\n';
+
+	for (int i = 0; i < height; i = i + 1)
+	{
+		for (int j = 0; j < width; j = j + 1)
+		{
+			printf("Enter item №[%d][%d]: ", i + 1, j + 1);
+			while (scanf_s("%d%c", &arr1[i][j], &c, 1) != 2 || c != '\n')
+			{
+				printf("ERROR! You entered an incorrect value.Enter array height:\n ");
+				while (getchar() != '\n');
+			}
+		}
+	}
+}
+
+/*!
+\brief Функция рализует вывод многомерного массива на экран.
+\version 1.0
+\param[in] **arr1 - указатель на массив
+\param[in] height - ширина массива
+\param[in] width - длина массива
+\return не возвращает значений.
+
+//Полное описание функции:
+
+Функция выводит многомерный массив на экран.
+*/
+
+void printArr1(int height, int  width, int** arr1)
+{
+	printf("Your array.\n");
+	for (int i = 0; i < height; i = i + 1)
+	{
+		for (int j = 0; j < width; j = j + 1)
+		{
+			printf("%d ", arr1[i][j]);
+		}
+		printf("\n");
+	}
+}
+
+/*!
+\brief Функция рализует сортировку строк многомерного массива по возрастанию.
+\version 1.0
+\param[in] **arr1 - указатель на массив
+\param[in] height - ширина массива
+\param[in] width - длина массива
+\return не возвращает значений.
+
+//Полное описание функции:
+
+Функция сортирует строки многомерного массива в порядке возрастания(по первому элементу строки).
+*/
+
+void sortArray(int height, int  width, int** arr1)
+{
+	int tmp = 0;
+	for (int i = 0; i < height; i = i + 1)
+	{
+		for (int k = i + 1; k < height; k = k + 1)
+		{
+			if (arr1[i][0] > arr1[k][0])
+			{
+				for (int j = 0; j < width; j = j + 1)    // Сортируем, по первому значению строки, строки многомерного массива в порядке возпостания 
+				{
+					tmp = arr1[i][j];
+					arr1[i][j] = arr1[k][j];
+					arr1[k][j] = tmp;
+				}
+			}
+		}
+	}
+}
+
+/*!
+\brief Функция реализует работу с пользовательским меню.
+\version 1.0
+\return
+Функция возвращает одно из двух возможных значений:
+-"0" - если программа работает без сбоев
+-"1" - если произошел сбой в программе
+
+\\Полное описание функции:
+
+Выводит на экран информацию, содержащую возможности программы, 
+просит пользователя выбрать желаюмую функцию и возвращает значение,
+которое забускает соответствующую функцию.
+*/
+int main()
+{
+	_CrtSetDbgFlag(_CRTDBG_ALLOC_MEM_DF | _CRTDBG_LEAK_CHECK_DF);
+
+	SetConsoleCP(1251);
+	SetConsoleOutputCP(1251);
+
+	setlocale(LC_ALL, "Russian");
+	setlocale(LC_ALL, "rus");
+
+	srand(time(NULL));
+
+	int** arr1 = NULL;
+	int height = 0;
+	int width = 0;
+	int menu = 0;
+	int wasE = 0;
+	int wasC = 0;
+	int wasH = 0;
+	char c = '\n';
+
+	do
+	{
+		menu = printMenu();
+
+		switch (menu)
+		{
+		case 1:
+			printf("--------------------------------------------------\n");
+			deleteArray(height, arr1);
+			height = requestHeight();
+			width = requestWidth();
+			arr1 = createArray(height, width, arr1);
+			wasE = 1;
+			wasC = 0;
+			printf("--------------------------------------------------\n");
+			break;
+		case 2:
+			printf("--------------------------------------------------\n");
+			if (1 == wasE)
+			{
+				fillingArr1Rand(height, width, arr1);
+				wasC = 1;
+				wasH = 1;
+			}
+			else
+			{
+				printf("ERROR!Enter the size of the array. Select menu item 1.\n");
+			}
+			printf("--------------------------------------------------\n");
+			break;
+		case 3:
+			printf("--------------------------------------------------\n");
+			if (1 == wasE)
+			{
+				fillingArr1Hand(height, width, arr1);
+				wasC = 1;
+				wasH = 1;
+			}
+			else
+			{
+				printf("ERROR!Enter the size of the array. Select menu item 1.\n");
+			}
+			printf("--------------------------------------------------\n");
+			break;
+		case 4:
+			printf("--------------------------------------------------\n");
+			if (1 == wasH)
+			{
+				printArr1(height, width, arr1);
+
+				printf("\n");
+			}
+			else
+			{
+				printf("ERROR!Fill array. Select menu item 2 or 3.\n");
+			}
+			printf("--------------------------------------------------\n");
+			break;
+		case 5:
+			printf("--------------------------------------------------\n");
+			if (1 == wasC)
+			{
+
+				sortArray(height, width, arr1);
+
+				printf("\n");
+				printArr1(height, width, arr1);
+			}
+			else
+			{
+				printf("ERROR!Fill array. Select menu item 2 or 3.\n");
+			}
+			printf("--------------------------------------------------\n");
+			break;
+		case 0:
+			break;
+		default:
+			printf("Wrong menu item.\n");
+		}
+	} while (menu != 0);
+
+	deleteArray(height, arr1);
+
+	_CrtDumpMemoryLeaks();
+
+	getchar();
+	getchar();
+
+	return 0;
+}
